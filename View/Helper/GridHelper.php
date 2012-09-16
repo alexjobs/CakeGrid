@@ -68,6 +68,7 @@ class GridHelper extends AppHelper {
 	function options($options){
 		$defaults = array(
 			'class_header'  => 'cg_header',
+			'class_colGroup'  => 'cg_colGroup',
 			'class_row'     => 'cg_row',
 			'class_table'   => 'cg_table',
 			'empty_message' => 'No Results',
@@ -162,6 +163,7 @@ class GridHelper extends AppHelper {
 	function generate($results){
 		$View = $this->_View();
         $this->Html->css('CakeGrid.cakegrid',null,array('inline' => false));
+        $this->Html->script('CakeGrid.cakegrid',array('inline' => false));
 		$directory = $this->__settings['type'];
 		
 		if($this->__settings['type'] == 'csv' && !empty($this->__totals)){
@@ -183,10 +185,19 @@ class GridHelper extends AppHelper {
         array(			'plugin'  => $this->plugin_name)
         );
 	
+//		$colGroup = $View->element($this->elemDir . DS . 'grid_colGroup', array(
+//			'plugin'  => $this->plugin_name, 
+//			'headers' => $this->__columns,
+//			'options' => $this->__settings
+//		),
+//        array(			'plugin'  => $this->plugin_name)
+//        );
+
         $results = $this->results($results);	
 		$generated = $View->element($this->elemDir . DS . 'grid_full', array(
          //   'plugin'  => $this->plugin_name,
 			'headers' => $headers,
+         //   'colGroup' => $colGroup,
 			'results' => $results,
 			'options' => $this->__settings
 		),
@@ -334,8 +345,8 @@ class GridHelper extends AppHelper {
 		
 		if(isset($column['options']['element']) && $column['options']['element'] != false){
 		$View = $this->_View();
-				
-			return  $View->element($this->elemDir . DS . $column['options']['element'], array('result' => $value ,'rowData' => $result,'options' => $column['options']));
+            				
+			return  $View->element( $column['options']['element'], array('result' => $value ,'rowData' => $result,'options' => $column['options']));
 		} else {
 			if(isset($column['options']['type']) && $column['options']['type'] == 'date'){
 				$value = date('m/d/Y', strtotime($value));
@@ -358,10 +369,10 @@ class GridHelper extends AppHelper {
 					$trailingParams = array();
 					if(!empty($action['trailingParams'])){
 						foreach($action['trailingParams'] as $key => $param){
-							$trailingParams[$key] = array_pop(Set::extract($param, $result));
+							$tempp = Set::extract($param, $result);
+							$trailingParams[$key] = array_pop($tempp);
 						}
 					}
-				
 					$actions[$name] = array(
 						'url' => Router::url($action['url'] + $trailingParams,true),
 						'options' => $action['options']
